@@ -8,7 +8,6 @@ import com.github.maxopoly.zeus.model.ConnectedMapState;
 import com.github.maxopoly.zeus.model.ZeusLocation;
 import com.github.maxopoly.zeus.rabbit.outgoing.artemis.SendPlayerData;
 import com.github.maxopoly.zeus.rabbit.sessions.PlayerDataTransferSession;
-import com.mojang.datafixers.DataFixer;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -40,7 +39,7 @@ import net.minecraft.world.level.storage.SavedFile;
 import net.minecraft.world.level.storage.WorldNBTStorage;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
-import org.bukkit.craftbukkit.v1_17_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_18_R1.CraftServer;
 import vg.civcraft.mc.civmodcore.nbt.wrappers.NBTCompound;
 import vg.civcraft.mc.civmodcore.players.settings.PlayerSetting;
 import vg.civcraft.mc.civmodcore.players.settings.PlayerSettingAPI;
@@ -71,7 +70,7 @@ public class CustomWorldNBTStorage extends WorldNBTStorage {
 
 	private CustomWorldNBTStorage(Convertable.ConversionSession conversionsession, DataFixer datafixer) {
 		super(conversionsession, datafixer);
-		this.playerDir = conversionsession.getWorldFolder(SavedFile.c).toFile();
+		this.playerDir = conversionsession.a(SavedFile.c).toFile();
 		this.playerDir.mkdirs();
 		this.customDataOriginallyLoaded = new ConcurrentHashMap<>();
 	}
@@ -97,9 +96,9 @@ public class CustomWorldNBTStorage extends WorldNBTStorage {
 	}
 
 	public void vanillaSave(EntityHuman entityhuman) {
-		NBTTagCompound nbttagcompound = entityhuman.save(new NBTTagCompound());
-		insertCustomPlayerData(entityhuman.getUniqueID(), nbttagcompound);
-		saveFullData(nbttagcompound, entityhuman.getUniqueID());
+		NBTTagCompound nbttagcompound = entityhuman.f(new NBTTagCompound());
+		insertCustomPlayerData(entityhuman.cm(), nbttagcompound);
+		saveFullData(nbttagcompound, entityhuman.cm());
 	}
 
 	public void saveFullData(NBTTagCompound compound, UUID uuid) {
@@ -141,13 +140,13 @@ public class CustomWorldNBTStorage extends WorldNBTStorage {
 	}
 
 	public void save(EntityHuman entityhuman) {
-		if (isActive(entityhuman.getUniqueID())) {
+		if (isActive(entityhuman.cm())) {
 			vanillaSave(entityhuman);
 			return;
 		}
 		ArtemisPlugin artemis = ArtemisPlugin.getInstance();
-		NBTTagCompound nbttagcompound = entityhuman.save(new NBTTagCompound());
-		insertCustomPlayerData(entityhuman.getUniqueID(), nbttagcompound);
+		NBTTagCompound nbttagcompound = entityhuman.f(new NBTTagCompound());
+		insertCustomPlayerData(entityhuman.cm(), nbttagcompound);
 		if (ArtemisPlugin.getInstance().getConfigManager().isDebugEnabled()) {
 			ArtemisPlugin.getInstance().getLogger().info("Saved NBT : " + nbttagcompound.toString());
 		}
@@ -172,14 +171,14 @@ public class CustomWorldNBTStorage extends WorldNBTStorage {
 		// always vanilla save
 		vanillaSave(entityhuman);
 		ArtemisPlugin.getInstance().getRabbitHandler()
-				.sendMessage(new SendPlayerData(transactionId, entityhuman.getUniqueID(), data, location));
+				.sendMessage(new SendPlayerData(transactionId, entityhuman.cm(), data, location));
 	}
 
 	public NBTTagCompound load(EntityHuman entityhuman) {
-		NBTTagCompound comp = loadCompound(entityhuman.getUniqueID());
+		NBTTagCompound comp = loadCompound(entityhuman.cm());
 		if (comp != null) {
-			int i = comp.hasKeyOfType("DataVersion", 3) ? comp.getInt("DataVersion") : -1;
-			entityhuman.load(GameProfileSerializer.a(this.a, DataFixTypes.b, comp, i));
+			int i = comp.b("DataVersion", 3) ? comp.h("DataVersion") : -1;
+			entityhuman.a(GameProfileSerializer.a(this.a, DataFixTypes.b, comp, i));
 		}
 		return comp;
 	}
@@ -227,8 +226,8 @@ public class CustomWorldNBTStorage extends WorldNBTStorage {
 	private static void insertWorldUUID(NBTTagCompound compound) {
 		String worldName = ArtemisPlugin.getInstance().getConfigManager().getConnectedMapState().getWorld();
 		UUID worldUUID = Bukkit.getWorld(worldName).getUID();
-		compound.setLong("WorldUUIDLeast", worldUUID.getLeastSignificantBits());
-		compound.setLong("WorldUUIDMost", worldUUID.getMostSignificantBits());
+		compound.a("WorldUUIDLeast", worldUUID.getLeastSignificantBits());
+		compound.a("WorldUUIDMost", worldUUID.getMostSignificantBits());
 	}
 
 	public static CustomWorldNBTStorage insertCustomNBTHandler() {
@@ -238,7 +237,7 @@ public class CustomWorldNBTStorage extends WorldNBTStorage {
 			trueServerField.setAccessible(true);
 			MinecraftServer trueServer = (MinecraftServer) trueServerField.get(server);
 			Field nbtField = MinecraftServer.class.getDeclaredField("k");
-			Convertable.ConversionSession session = trueServer.j;
+			Convertable.ConversionSession session = trueServer.l;
 			DataFixer dataFixer = trueServer.O;
 			CustomWorldNBTStorage customNBT = new CustomWorldNBTStorage(session, dataFixer);
 			overwriteFinalField(nbtField, customNBT, trueServer);
@@ -259,10 +258,10 @@ public class CustomWorldNBTStorage extends WorldNBTStorage {
 		// not reset
 		Map<String, String> extractedData = new HashMap<>();
 		for (PlayerSetting setting : PlayerSettingAPI.getAllSettings()) {
-			if (!specialDataCompound.hasKey(setting.getIdentifier())) {
+			if (!specialDataCompound.e(setting.getIdentifier())) {
 				continue;
 			}
-			String serial = specialDataCompound.getString(setting.getIdentifier());
+			String serial = specialDataCompound.l(setting.getIdentifier());
 			extractedData.put(setting.getIdentifier(), serial);
 			try {
 				Object deserialized = setting.deserialize(serial);
@@ -288,9 +287,9 @@ public class CustomWorldNBTStorage extends WorldNBTStorage {
 		NBTTagCompound comp = generalPlayerDataCompound;
 		NBTTagCompound customDataComp = new NBTTagCompound();
 		for (Entry<String, String> entry : dataToInsert.entrySet()) {
-			customDataComp.setString(entry.getKey(), entry.getValue());
+			customDataComp.a(entry.getKey(), entry.getValue());
 		}
-		comp.set(CUSTOM_DATA_ID, customDataComp);
+		comp.a(CUSTOM_DATA_ID, customDataComp);
 	}
 
 	private static void overwriteFinalField(Field field, Object newValue, Object obj) {
