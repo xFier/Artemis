@@ -24,13 +24,13 @@ public final class NameAPI {
 	/**
 	 * Looks up a player name for the given UUID. If the player has not logged on at
 	 * all since this server was started, their UUID may not be cached locally in
-	 * which case a lookup for the UUID is sent to Zeus. Any UUID <--> name mapping
+	 * which case a lookup for the UUID is sent to Zeus. Any UUID &lt;--&gt; name mapping
 	 * looked up since this servers last restart is cached and mappings for all
 	 * players online on any Artemis server are guaranteed to be globally available.
-	 * 
+	 *
 	 * For Group.CONSOLE_UUID, the special UUID used for console command, the string
 	 * "Server console" will be returned
-	 * 
+	 *
 	 * @param uuid UUID to look up name for, may not be null
 	 * @return Name of the player with the given UUID or null if no such player
 	 *         exists
@@ -42,7 +42,7 @@ public final class NameAPI {
 		}
 		return ArtemisPlugin.getInstance().getPlayerDataManager().getName(uuid);
 	}
-	
+
 	public static String getNameLocal(UUID uuid) {
 		return ArtemisPlugin.getInstance().getPlayerDataManager().getCachedName(uuid);
 	}
@@ -57,7 +57,7 @@ public final class NameAPI {
 	 * Fetches the UUID of a player async and then runs the given Consumer sync with
 	 * the Bukkit mainthread. UUID passed to the consumer may be null if the player
 	 * is not known
-	 * 
+	 *
 	 * @param name    Name of the player to lookup
 	 * @param handler Consumer of the fetched UUID
 	 */
@@ -70,7 +70,7 @@ public final class NameAPI {
 	 * Fetches the name of a player async and then runs the given Consumer sync with
 	 * the Bukkit mainthread. Name passed to the consumer may be null if the player
 	 * is not known
-	 * 
+	 *
 	 * @param uuid    UUID of the player to lookup
 	 * @param handler Consumer of the fetched name
 	 */
@@ -81,7 +81,7 @@ public final class NameAPI {
 
 	/**
 	 * Fetches a players UUID async and passes it to the given consumer once found
-	 * 
+	 *
 	 * @param name    Name of the player to lookup
 	 * @param handler Consumer of the fetched UUID
 	 */
@@ -91,7 +91,7 @@ public final class NameAPI {
 
 	/**
 	 * Fetches a players name async and passes it to the given consumer once found
-	 * 
+	 *
 	 * @param uuid    UUID of the player to lookup
 	 * @param handler Consumer of the fetched name
 	 */

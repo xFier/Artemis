@@ -1,13 +1,14 @@
-# READ MORE: https://www.spigotmc.org/wiki/plugin-yml/
-
-name: ${project.name}
-version: ${project.version}
-main: ${project.groupId}.${project.artifactId}.ArtemisPlugin
+name: ${name}
+main: com.github.maxopoly.artemis.ArtemisPlugin
+version: ${version}
+authors:
+  - Maxopoly
+  - Diet_Cola
+  - xFier
+depend:
+  - CivModCore
+  - CombatTagPlus
 api-version: 1.17
-depend: [CivModCore]
-softdepend: []
-authors: [Maxopoly]
-
 permissions:
     artemis.tp:
       description: Gives access to the teleport command
