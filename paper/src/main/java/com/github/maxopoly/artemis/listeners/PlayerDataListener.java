@@ -1,6 +1,9 @@
 package com.github.maxopoly.artemis.listeners;
 
+import com.github.maxopoly.artemis.events.PlayerAttemptLeaveShard;
 import net.kyori.adventure.text.Component;
+import net.minelink.ctplus.CombatTagPlus;
+import net.minelink.ctplus.event.CombatLogEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

@@ -8,7 +8,7 @@ plugins {
 
 allprojects {
     group = "net.civmc.artemis"
-    version = "5.0.0-SNAPSHOT"
+    version = "1.2.0"
     description = "Artemis"
 }
 
@@ -16,9 +16,6 @@ subprojects {
     apply(plugin = "net.civmc.civgradle.plugin")
     apply(plugin = "java-library")
     apply(plugin = "maven-publish")
-
-    group = "net.cimc.jukealert"
-    version = "3.0.0-SNAPSHOT"
 
     java {
         toolchain {
@@ -34,13 +31,14 @@ subprojects {
         maven("https://papermc.io/repo/repository/maven-public/")
 
         civRepo("CivMC/CivModCore")
+        civRepo("CivMC/CombatTagPlus")
     }
 
     publishing {
         repositories {
             maven {
                 name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/CivMC/JukeAlert")
+                url = uri("https://maven.pkg.github.com/xFier/Artemis")
                 credentials {
                     username = System.getenv("GITHUB_ACTOR")
                     password = System.getenv("GITHUB_TOKEN")
