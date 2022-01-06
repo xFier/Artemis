@@ -11,8 +11,9 @@ import com.github.maxopoly.zeus.servers.ConnectedServer;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.UUID;
-import net.minecraft.nbt.NBTCompressedStreamTools;
-import net.minecraft.nbt.NBTTagCompound;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtIo;
 import org.bukkit.Bukkit;
 import org.json.JSONObject;
 
@@ -30,14 +31,14 @@ public class HandleZeusRequestPlayerData extends GenericInteractiveRabbitCommand
 		if (Bukkit.getPlayer(player) != null || CustomWorldNBTStorage.isActive(player)) {
 			return;
 		}
-		NBTTagCompound playerData = ArtemisPlugin.getInstance().getCustomNBTStorage().vanillaLoad(player);
+		CompoundTag playerData = ArtemisPlugin.getInstance().getCustomNBTStorage().vanillaLoad(player);
 		if (playerData == null) {
 			sendReply(sendingServer, new SendRequestedPlayerData(ticket, null, null));
 			return;
 		}
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		try {
-			NBTCompressedStreamTools.a(playerData, output);
+			NbtIo.writeCompressed(playerData, output);
 		} catch (IOException e) {
 			ArtemisPlugin.getInstance().getLogger().severe("Failed to serialize player data: " + e.toString());
 			return;
