@@ -2,6 +2,9 @@
 # Created by https://www.gitignore.io/api/java,batch,linux,macos,maven,windows,eclipse,intellij+all
 # Edit at https://www.gitignore.io/?templates=java,batch,linux,macos,maven,windows,eclipse,intellij+all
 
+.gradle
+build
+
 ### Batch ###
 # BatchFiles
 *.bat
